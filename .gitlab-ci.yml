@@ -1,6 +1,7 @@
 stages:
   - validate
   - build
+  - test
   - security_scan
   - publish
 
@@ -23,6 +24,35 @@ build_image:
     - dayflow-shell
   script:
     - docker build -t "$IMAGE_TAG" .
+
+health_test:
+  stage: test
+  tags:
+    - dayflow-shell
+  script:
+    - |
+      TEST_CONTAINER="dayflow-test-$CI_JOB_ID"
+
+      cleanup() {
+        docker rm -f "$TEST_CONTAINER" >/dev/null 2>&1 || true
+      }
+      trap cleanup EXIT
+
+      docker run -d --name "$TEST_CONTAINER" \
+        -p 127.0.0.1::80 "$IMAGE_TAG"
+
+      HOST_PORT=$(docker port "$TEST_CONTAINER" 80/tcp | awk -F: '{print $NF}')
+
+      for i in $(seq 1 15); do
+        if curl -fsS "http://127.0.0.1:$HOST_PORT/" >/dev/null; then
+          echo "DAYFLOW health test PASSED"
+          exit 0
+        fi
+        sleep 2
+      done
+
+      echo "DAYFLOW health test FAILED"
+      exit 1
 
 security_scan:
   stage: security_scan
