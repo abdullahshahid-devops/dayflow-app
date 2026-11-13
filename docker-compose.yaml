@@ -1,7 +1,6 @@
 services:
   dayflow:
-    build: .
-    image: dayflow:latest
+    image: ${IMAGE_TAG:-dayflow:latest}
     container_name: dayflow
     ports:
       - "8080:80"
