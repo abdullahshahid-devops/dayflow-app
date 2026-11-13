@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DAYFLOW — Personal Routine OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page1:#CDB8E0;--page2:#F8E4EA;--card:#241F34;--card2:#2B2540;
+  --purple:#8B5CF6;--lav:#C4B5FD;--pink:#F472B6;--blue:#60A5FA;
+  --green:#4ADE80;--orange:#FB923C;--white:#FFF;--muted:#A39AB9;
+  --border:rgba(255,255,255,.065);--shadow:0 12px 35px rgba(17,10,29,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;padding:16px;background:linear-gradient(135deg,var(--page1),#E5CBE2 48%,var(--page2));font-family:Outfit,Poppins,system-ui,sans-serif;color:var(--white)}
+button,input{font:inherit}
+button:focus-visible,input:focus-visible{outline:2px solid var(--lav);outline-offset:3px}
+.shell{width:min(1120px,100%);margin:0 auto;padding:25px 26px 26px;border-radius:9px;background:rgba(255,255,255,.16);box-shadow:0 25px 65px rgba(64,38,79,.19);border:1px solid rgba(255,255,255,.2)}
+.topline{display:flex;justify-content:space-between;align-items:center;margin:0 2px 13px;color:#51445F;font-size:11px}
+.brand{font-weight:600;letter-spacing:.02em}.date-tools{display:flex;align-items:center;gap:10px}
+.date{color:#6E607A}.reset{border:1px solid rgba(255,255,255,.22);background:rgba(36,31,52,.88);color:#EEE8F8;border-radius:20px;padding:7px 12px;font-size:10px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1.2fr .66fr 1.12fr .66fr;grid-template-rows:168px 220px;gap:5px}
+.card{position:relative;min-width:0;min-height:0;overflow:hidden;padding:18px 19px;border-radius:20px;background:linear-gradient(145deg,#292339 0%,#211C30 78%);border:1px solid var(--border);box-shadow:var(--shadow);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(17,10,29,.34),0 0 18px rgba(167,139,250,.10);border-color:rgba(196,181,253,.18)}
+.card.flash{outline:2px solid rgba(196,181,253,.75);box-shadow:0 0 25px rgba(167,139,250,.28)}
+.card h2{font-size:10px;font-weight:500;margin:0;color:#F4F0FA;white-space:nowrap}
+.muted{font-size:9px;color:var(--muted)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+.glass-icon{width:27px;height:27px;flex:0 0 27px;display:grid;place-items:center;margin-left:auto;margin-right:2px;border-radius:9px;background:linear-gradient(145deg,rgba(255,255,255,.17),rgba(255,255,255,.055));border:1px solid rgba(255,255,255,.19);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 5px 15px rgba(0,0,0,.18);backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);color:#DCCBFF}
+.glass-icon svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.fire-icon{font-size:15px;line-height:1;color:#FFC1A0}
+.card-head{justify-content:flex-start}
+.card-head .pill,.card-head .smallcount{margin-left:auto}
+.card-head .glass-icon + .pill{margin-left:auto}
+
+.pill{border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.055);border-radius:20px;padding:5px 8px;color:#BEB5D0;font-size:8px;white-space:nowrap}
+.daily{grid-column:1;grid-row:1}.work{grid-column:2;grid-row:1}.food{grid-column:3;grid-row:1}.prayer{grid-column:4;grid-row:1}
+.exercise{grid-column:1;grid-row:2}.weekly{grid-column:2/4;grid-row:2}.streak{grid-column:4;grid-row:2}
+.work,.prayer,.food,.exercise{--accent:var(--purple)}
+.tasklist{display:grid;gap:6px}.prayer-list{grid-template-columns:1fr 1fr;gap:4px;margin-top:3px}.prayer-list .task{padding:6px 6px;gap:5px;border-radius:8px}.prayer-list .check{width:12px;height:12px;flex-basis:12px}.prayer-list .name{font-size:8px}
+.task{width:100%;display:flex;align-items:center;gap:8px;text-align:left;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.045);border-radius:9px;padding:7px 8px;color:#F6F2FC;cursor:pointer;transition:.18s ease;min-width:0}
+.task:hover{background:rgba(255,255,255,.075);transform:translateX(2px)}
+.check{width:13px;height:13px;flex:0 0 13px;border:1px solid rgba(255,255,255,.3);border-radius:4px;display:grid;place-items:center;font-size:9px;color:#201B2C}
+.task.done .check{background:var(--accent);border-color:var(--accent);box-shadow:0 0 10px color-mix(in srgb,var(--accent) 55%,transparent)}
+.task.done .name{color:#8F88A3;text-decoration:line-through}
+.name{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.smallcount{font-size:8px;color:var(--muted)}
+.barline{height:4px;border-radius:8px;background:rgba(255,255,255,.09);overflow:hidden;margin-top:10px}
+.barline span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6D28D9,#C4B5FD);border-radius:inherit;transition:width .4s ease}
+.work .barline span{background:linear-gradient(90deg,#6D28D9,#A78BFA)}
+.prayer .barline span{background:linear-gradient(90deg,#16A34A,#4ADE80)}
+.food .barline span{background:linear-gradient(90deg,#EA580C,#FB923C)}
+.exercise .barline span{background:linear-gradient(90deg,#BE185D,#F472B6)}
+.taskinput{width:54px;min-width:54px;flex:0 0 54px;padding:4px 2px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.15);color:#fff;text-align:center;font-size:10px}
+.reptext{font-size:7px;color:var(--muted)}
+.exercise .tasklist{gap:8px}.exercise .task{padding:9px 8px}.exercise .name{font-size:10px}
+.exercise-foot{margin-top:12px;font-size:9px;color:var(--muted)}
+.gaugebox{display:flex;justify-content:center;align-items:center;margin:2px auto 0;width:100%;height:94px;position:relative}
+.gaugebox svg{width:100%;height:94px;overflow:visible}
+.gauge-track,.gauge-value{fill:none;stroke-width:9;stroke-linecap:round}
+.gauge-track{stroke:rgba(255,255,255,.09)}.gauge-value{stroke:url(#greenGrad);stroke-dasharray:176;stroke-dashoffset:176;transition:stroke-dashoffset .4s ease}
+.gauge-num{position:absolute;bottom:1px;text-align:center}.gauge-num strong{font-size:25px;font-weight:300;color:#E6D9FF}.gauge-num small{display:block;color:var(--muted);font-size:8px}
+.daily{padding:19px 21px}
+.daily h2{font-size:10px}
+.daily-main{display:flex;align-items:center;justify-content:space-between;gap:10px;height:calc(100% - 24px)}
+.daily-title{font-size:28px;line-height:1.05;letter-spacing:-.045em;font-weight:400}
+.daily-title span{color:var(--lav)}
+.daily-score{font-size:31px;font-weight:300;letter-spacing:-.04em;margin-top:7px}
+.daily-score small{font-size:8px;color:var(--muted);letter-spacing:0}
+.daily-ring{width:76px;height:76px;flex:0 0 76px;position:relative}
+.daily-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.daily-ring circle{fill:none;stroke-width:7}
+.rtrack{stroke:rgba(255,255,255,.1)}.rvalue{stroke:url(#purpleGrad);stroke-linecap:round;stroke-dasharray:201;stroke-dashoffset:201;transition:stroke-dashoffset .8s cubic-bezier(.2,.75,.25,1)}
+.daily-ring strong{position:absolute;inset:0;display:grid;place-items:center;font-size:17px;font-weight:400}
+.daily-chip{position:absolute;right:12px;top:40px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(12px);border-radius:9px;padding:6px 8px;font-size:8px;color:#DAD2EA;z-index:2}
+.food .food-layout{display:flex;align-items:center;gap:6px;min-width:0}
+.donut{width:65px;height:65px;position:relative;flex:0 0 65px}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:7}
+.dtrack{stroke:rgba(255,255,255,.1)}.dvalue{stroke:url(#purpleGrad);stroke-linecap:round;stroke-dasharray:163;stroke-dashoffset:163;transition:stroke-dashoffset .8s cubic-bezier(.2,.75,.25,1)}
+.donut strong{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;font-weight:400}
+.food .donut{width:56px;height:56px;flex-basis:56px}.food .tasklist{gap:4px;min-width:0;flex:1}.food .task{padding:5px 4px;gap:4px;min-width:0}.food .check{width:11px;height:11px;flex-basis:11px}.food .name{font-size:8px;letter-spacing:-.15px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.15}
+.weekly .card-head{margin-bottom:8px}
+.chart{height:135px;display:flex;align-items:flex-end;gap:8px;padding:10px 9px 5px;border-radius:13px;background:linear-gradient(135deg,rgba(196,181,253,.075),rgba(139,92,246,.025));border:1px solid rgba(196,181,253,.10);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.chart-col{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;min-width:0}
+.chart-pct{font-size:7px;color:#C8BEDC}
+.chart-barwrap{height:105px;width:100%;display:flex;align-items:flex-end}
+.chart-bar{height:0;width:100%;min-height:2px;border-radius:4px 4px 1px 1px;border:1px solid rgba(221,214,254,.18);background:linear-gradient(180deg,#C4B5FD 0%,#A78BFA 38%,#6D28D9 100%);transition:height .4s ease}
+.chart-col.today .chart-bar{box-shadow:0 0 14px rgba(139,92,246,.48);background:linear-gradient(180deg,#FBCFE8,#A78BFA)}
+.chart-col small{font-size:7px;color:var(--muted)}
+.streak-body{display:flex;align-items:center;gap:14px}
+.streak-ring{width:72px;height:72px;position:relative;flex:0 0 72px}
+.streak-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.streak-ring circle{fill:none;stroke-width:7}
+.sttrack{stroke:rgba(255,255,255,.1)}.stvalue{stroke:url(#purpleGrad);stroke-linecap:round;stroke-dasharray:201;stroke-dashoffset:201;transition:stroke-dashoffset .8s cubic-bezier(.2,.75,.25,1)}
+.streak-ring strong{position:absolute;inset:0;display:grid;place-items:center;font-size:22px;font-weight:300}
+.streak-copy strong{font-size:20px;font-weight:300;color:#E7D9FA}.streak-copy p{font-size:8px;color:var(--muted);line-height:1.4;margin:3px 0 0}
+.toast{position:fixed;bottom:18px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#211C30;color:#fff;border:1px solid rgba(196,181,253,.25);padding:9px 14px;border-radius:20px;font-size:10px;transition:.25s;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:850px){
+ .shell{padding:15px}.grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+ .work,.prayer,.daily,.food,.exercise,.weekly,.streak{grid-column:auto;grid-row:auto;min-height:155px}
+ .daily,.weekly{grid-column:span 2}
+ .daily{min-height:168px}
+}
+@media(max-width:560px){
+ body{padding:0}.shell{padding:10px;border-radius:0;width:100%;min-height:100vh}
+ .topline{padding:6px 3px}.grid{grid-template-columns:1fr;gap:8px}
+ .work,.prayer,.daily,.food,.exercise,.weekly,.streak{grid-column:1;grid-row:auto;min-height:145px}
+ .daily{min-height:170px}
+ .exercise{min-height:190px}.weekly{min-height:190px}
+ .topline{font-size:10px}.date-tools{gap:5px}.reset{padding:6px 9px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+/* Engaging sidebar dashboard layout */
+.shell{width:min(1440px,100%);padding:0;overflow:hidden;background:rgba(255,255,255,.18)}
+.app-layout{display:grid;grid-template-columns:218px minmax(0,1fr);min-height:790px}
+.sidebar{padding:30px 18px 22px;background:linear-gradient(180deg,#211b31 0%,#191526 100%);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column}
+.side-brand{font-size:18px;font-weight:700;letter-spacing:.08em;color:#fff;line-height:1.1;margin:2px 8px 42px}
+.side-brand span{color:#B9A0FF}
+.side-brand small{display:block;margin-top:9px;font-size:8px;letter-spacing:.2em;color:#827895;font-weight:500}
+.side-label{font-size:9px;letter-spacing:.18em;color:#817790;margin:0 10px 12px}
+.side-nav{display:grid;gap:6px}
+.side-nav a{position:relative;text-decoration:none;color:#AFA6C0;padding:12px 12px;border-radius:10px;font-size:12px;transition:.2s ease;border:1px solid transparent}
+.side-nav a:hover{color:#fff;background:rgba(255,255,255,.055)}
+.side-nav a.active{color:#F5F0FF;background:linear-gradient(100deg,rgba(139,92,246,.25),rgba(139,92,246,.08));border-color:rgba(196,181,253,.16)}
+.side-nav a.active:before{content:"";position:absolute;left:-1px;top:9px;bottom:9px;width:3px;border-radius:4px;background:#A78BFA}
+.sidebar-note{margin-top:auto;padding:16px 14px;border-radius:14px;background:linear-gradient(145deg,rgba(139,92,246,.18),rgba(255,255,255,.035));border:1px solid rgba(196,181,253,.14)}
+.sidebar-note span,.sidebar-note small{display:block;font-size:8px;color:#A99FBA;letter-spacing:.12em}
+.sidebar-note strong{display:block;font-size:30px;font-weight:400;color:#E6D9FF;margin:5px 0}
+.sidebar-note small{letter-spacing:0;font-size:9px}
+.workspace{min-width:0;padding:28px 30px 30px}
+.topline{align-items:center;margin:0 0 22px;padding:0 2px;gap:18px}
+.welcome h1{margin:4px 0 3px;font-size:23px;line-height:1.15;font-weight:500;letter-spacing:-.04em;color:#29213A}
+.welcome p{margin:0;color:#766783;font-size:11px}
+.eyebrow{font-size:9px;letter-spacing:.18em;font-weight:600;color:#8B5CF6}
+.date-tools{flex-shrink:0}
+.date{font-size:10px}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto;gap:13px}
+.card{padding:20px;min-height:190px;border-radius:17px}
+.card h2{font-size:11px;letter-spacing:.08em}
+.card-head{margin-bottom:16px}
+.daily{grid-column:1/3;grid-row:1;min-height:220px;padding:23px}
+.work{grid-column:3;grid-row:1;min-height:220px}
+.food{grid-column:1;grid-row:2;min-height:205px}
+.prayer{grid-column:2;grid-row:2;min-height:205px}
+.exercise{grid-column:3;grid-row:2;min-height:205px}
+.weekly{grid-column:1/3;grid-row:3;min-height:225px}
+.streak{grid-column:3;grid-row:3;min-height:225px}
+.daily-title{font-size:34px}
+.daily-score{font-size:34px}
+.daily-ring{width:92px;height:92px;flex-basis:92px}
+.daily-chip{right:17px;top:48px}
+.chart{height:145px}
+.chart-barwrap{height:112px}
+.chart-col.today .chart-bar{background:linear-gradient(180deg,#DDD6FE 0%,#A78BFA 45%,#6D28D9 100%)}
+.prayer-list{gap:6px}
+.prayer-list .task{padding:8px 7px}
+.prayer-list .name{font-size:9px}
+.food .name{font-size:9px}
+.exercise .task{padding:10px 9px}
+@media(max-width:1000px){
+ .app-layout{grid-template-columns:180px minmax(0,1fr)}
+ .workspace{padding:22px 20px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .daily{grid-column:1/3;grid-row:auto}
+ .work,.food,.prayer,.exercise,.weekly,.streak{grid-column:auto;grid-row:auto}
+ .weekly{grid-column:1/3}
+ .streak{grid-column:1/3;min-height:160px}
+}
+@media(max-width:680px){
+ body{padding:0}
+ .shell{width:100%;border-radius:0;min-height:100vh}
+ .app-layout{display:block;min-height:100vh}
+ .sidebar{padding:13px 14px 10px;border-right:0;border-bottom:1px solid rgba(255,255,255,.1)}
+ .side-brand{margin:0 3px 12px;font-size:15px}
+ .side-brand small{display:none}
+ .side-label,.sidebar-note{display:none}
+ .side-nav{display:flex;overflow-x:auto;gap:5px;padding-bottom:2px}
+ .side-nav a{white-space:nowrap;padding:8px 11px;font-size:10px}
+ .side-nav a.active:before{left:10px;right:10px;top:auto;bottom:1px;width:auto;height:2px}
+ .workspace{padding:18px 12px 22px}
+ .topline{align-items:flex-start;flex-direction:column;margin-bottom:16px}
+ .welcome h1{font-size:20px}
+ .date-tools{width:100%;justify-content:space-between}
+ .grid{grid-template-columns:1fr;gap:9px}
+ .daily,.work,.food,.prayer,.exercise,.weekly,.streak{grid-column:1;grid-row:auto;min-height:175px}
+ .daily{min-height:195px}
+ .weekly{min-height:205px}
+ .streak{min-height:160px}
+}
+
+
+/* DAYFLOW identity and focused-section interaction */
+.brand-lockup{display:flex;align-items:center;gap:10px}
+.brand-mark{width:39px;height:39px;display:grid;place-items:center;flex:0 0 39px;border-radius:12px;background:linear-gradient(145deg,rgba(196,181,253,.19),rgba(139,92,246,.08));border:1px solid rgba(196,181,253,.23);box-shadow:0 5px 18px rgba(139,92,246,.13),inset 0 1px 0 rgba(255,255,255,.12)}
+.brand-mark svg{width:100%;height:100%}
+.side-brand{margin-bottom:38px;letter-spacing:0}
+.brand-name{font-size:20px;font-weight:700;letter-spacing:.13em;color:#F8F5FF}
+.brand-name span{color:#BCA7FF}
+.side-brand>small{margin-left:49px;margin-top:5px;font-size:7px;letter-spacing:.19em}
+.grid .card{transition:opacity .28s ease,filter .28s ease,transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.grid.is-focused .card:not(.is-selected){opacity:.34;filter:brightness(.55) saturate(.62)}
+.grid.is-focused .card.is-selected{opacity:1;filter:brightness(1.12) saturate(1.08);transform:translateY(-3px);z-index:2;border-color:rgba(196,181,253,.62);box-shadow:0 0 0 1px rgba(167,139,250,.18),0 16px 42px rgba(17,10,29,.38),0 0 28px rgba(139,92,246,.28)}
+.grid.is-focused .card.is-selected:hover{transform:translateY(-4px)}
+@media(prefers-reduced-motion:reduce){.grid .card{transition:none}}
+
+
+/* Desktop one-screen dashboard: keep every card visible without page scrolling */
+@media (min-width:1001px) and (min-height:650px){
+ html,body{height:100%;min-height:0;overflow:hidden}
+ body{padding:10px}
+ .shell{width:100%;height:calc(100vh - 20px);min-height:0;max-width:1600px}
+ .app-layout{height:100%;min-height:0;grid-template-columns:205px minmax(0,1fr)}
+ .sidebar{min-height:0;padding:22px 16px 18px}
+ .side-brand{margin-bottom:28px}
+ .workspace{height:100%;min-height:0;display:flex;flex-direction:column;padding:19px 22px 20px;overflow:hidden}
+ .topline{flex:0 0 auto;margin-bottom:14px;min-height:62px}
+ .welcome h1{font-size:21px}
+ .grid{flex:1 1 auto;min-height:0;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px}
+ .grid .card{min-height:0;height:100%;padding:16px 17px;overflow:hidden}
+ .daily{grid-column:1/3;grid-row:1}
+ .work{grid-column:3;grid-row:1}
+ .prayer{grid-column:4;grid-row:1}
+ .food{grid-column:1;grid-row:2}
+ .exercise{grid-column:2;grid-row:2}
+ .weekly{grid-column:3;grid-row:2}
+ .streak{grid-column:4;grid-row:2}
+ .daily-title{font-size:30px}
+ .daily-score{font-size:29px}
+ .daily-ring{width:82px;height:82px;flex-basis:82px}
+ .daily-chip{top:40px}
+ .card-head{margin-bottom:10px}
+ .tasklist{gap:5px}
+ .task{padding:6px 7px}
+ .prayer-list{gap:5px}
+ .prayer-list .task{padding:7px 5px}
+ .food .task{padding:5px 4px}
+ .exercise .tasklist{gap:6px}
+ .exercise .task{padding:7px 7px}
+ .exercise-foot{margin-top:8px}
+ .chart{height:calc(100% - 38px);min-height:95px;padding:8px 7px 4px;gap:6px}
+ .chart-barwrap{height:100%}
+ .streak-body{gap:9px}
+ .streak-ring{width:62px;height:62px;flex-basis:62px}
+}
+@media (min-width:1001px) and (max-height:760px){
+ body{padding:6px}
+ .shell{height:calc(100vh - 12px)}
+ .app-layout{grid-template-columns:185px minmax(0,1fr)}
+ .sidebar{padding:16px 13px 14px}
+ .side-brand{margin-bottom:19px}
+ .side-nav{gap:3px}
+ .side-nav a{padding:9px 10px;font-size:11px}
+ .workspace{padding:12px 16px 14px}
+ .topline{margin-bottom:8px;min-height:52px}
+ .welcome h1{font-size:19px}
+ .grid{gap:8px}
+ .grid .card{padding:12px 13px}
+ .daily-title{font-size:27px}
+ .daily-score{font-size:26px;margin-top:4px}
+ .daily-ring{width:72px;height:72px;flex-basis:72px}
+ .daily-chip{top:32px;right:12px;padding:4px 6px}
+ .card-head{margin-bottom:7px}
+ .chart{min-height:82px}
+ .prayer-list .task{padding:5px 4px}
+ .prayer-list .name{font-size:8px}
+}
+
+
+/* Balanced card spacing, generous controls, and a subtle footer divider */
+@media (min-width:1001px) and (min-height:650px){
+ .grid .card{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  gap:0;
+  padding:clamp(17px,1.45vw,25px) clamp(16px,1.35vw,23px) 27px;
+ }
+ .grid .card::after{
+  content:"";
+  position:absolute;
+  left:18px;
+  right:18px;
+  bottom:12px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,181,253,.34) 18%,rgba(196,181,253,.15) 82%,transparent);
+  pointer-events:none;
+ }
+ .grid .card-head{flex:0 0 auto;margin-bottom:clamp(13px,1.3vh,19px)}
+ .grid .tasklist{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:space-evenly;gap:clamp(7px,1.1vh,13px)}
+ .grid .task{flex:1 1 0;min-height:34px;padding:9px 11px;border-radius:11px;gap:10px}
+ .grid .task .check{width:16px;height:16px;flex-basis:16px;border-radius:5px;font-size:10px}
+ .grid .task .name{font-size:clamp(10px,.75vw,12px)}
+ .grid .smallcount,.grid .reptext{font-size:9px}
+ .prayer .prayer-list{
+  flex:1 1 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:repeat(3,minmax(0,1fr));
+  align-content:stretch;
+  justify-content:stretch;
+  gap:9px;
+  margin:0;
+ }
+ .prayer .prayer-list .task{
+  min-height:0;
+  height:100%;
+  padding:10px 10px;
+  gap:8px;
+  background:linear-gradient(120deg,rgba(255,255,255,.065),rgba(255,255,255,.025));
+  border-color:rgba(255,255,255,.075);
+ }
+ .prayer .prayer-list .name{font-size:clamp(10px,.78vw,12px);white-space:nowrap}
+ .food .food-layout{flex:1 1 auto;align-items:center;gap:clamp(10px,1vw,17px)}
+ .food .donut{width:clamp(62px,5vw,82px);height:clamp(62px,5vw,82px);flex-basis:clamp(62px,5vw,82px)}
+ .food .tasklist{justify-content:center;gap:9px}
+ .food .task{min-height:36px;padding:8px 9px}
+ .food .name{font-size:clamp(9px,.72vw,11px);white-space:normal}
+ .food>.muted{margin-top:10px!important}
+ .work .tasklist{justify-content:center}
+ .exercise .tasklist{justify-content:center;gap:10px}
+ .exercise .task{min-height:39px;padding:9px 10px}
+ .exercise .exercise-foot{margin-top:auto;padding-top:11px;font-size:10px}
+ .daily .daily-main{flex:1 1 auto;min-height:0}
+ .daily .daily-title{font-size:clamp(30px,2.5vw,39px)}
+ .daily .daily-score{font-size:clamp(29px,2.3vw,36px)}
+ .daily .daily-ring{width:clamp(82px,6.5vw,105px);height:clamp(82px,6.5vw,105px);flex-basis:clamp(82px,6.5vw,105px)}
+ .weekly .chart{flex:1 1 auto;min-height:0;height:auto}
+ .weekly .chart-col{min-height:0}
+ .weekly .chart-barwrap{flex:1 1 auto;min-height:0}
+ .streak .streak-body{flex:1 1 auto;align-items:center}
+}
+@media (min-width:1001px) and (max-height:760px){
+ .grid .card{padding:13px 14px 25px}
+ .grid .card-head{margin-bottom:9px}
+ .grid .tasklist{gap:6px}
+ .grid .task{min-height:30px;padding:6px 8px}
+ .prayer .prayer-list{gap:6px}
+ .prayer .prayer-list .task{padding:7px 8px}
+ .food .task{min-height:31px;padding:6px 7px}
+ .exercise .task{min-height:33px;padding:6px 8px}
+ .grid .card::after{bottom:10px}
+}
+
+
+/* Final layout refinements requested */
+@media (min-width:1001px) and (min-height:650px){
+ .app-layout{grid-template-columns:238px minmax(0,1fr)}
+ .sidebar{padding-left:19px;padding-right:19px}
+ .side-nav a{padding-left:14px;padding-right:14px}
+ .prayer .prayer-list{
+  grid-template-columns:1fr;
+  grid-template-rows:repeat(6,minmax(0,1fr));
+  gap:6px;
+ }
+ .prayer .prayer-list .task{
+  min-height:0;
+  padding:7px 12px;
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-start;
+ }
+ .prayer .prayer-list .name{font-size:11px}
+ .work .barline{display:none}
+}
+@media (min-width:1001px) and (max-height:760px){
+ .app-layout{grid-template-columns:220px minmax(0,1fr)}
+}
+
+
+/* Make individual prayer rows respond to hover like the other task buttons */
+@media (hover:hover){
+ .prayer .prayer-list .task:hover{
+  background:linear-gradient(120deg,rgba(196,181,253,.19),rgba(139,92,246,.12));
+  border-color:rgba(196,181,253,.32);
+  box-shadow:0 4px 14px rgba(139,92,246,.14),inset 0 1px 0 rgba(255,255,255,.08);
+  filter:brightness(1.16);
+  transform:translateY(-1px);
+ }
+}
+.prayer .prayer-list .task:focus-visible{
+ background:linear-gradient(120deg,rgba(196,181,253,.19),rgba(139,92,246,.12));
+ border-color:rgba(196,181,253,.42);
+}
+
+
+/* Consistent purple hover treatment for every checklist/list item */
+@media (hover:hover){
+ .tasklist .task:hover{
+  background:linear-gradient(120deg,rgba(196,181,253,.19),rgba(139,92,246,.12));
+  border-color:rgba(196,181,253,.32);
+  box-shadow:0 4px 14px rgba(139,92,246,.14),inset 0 1px 0 rgba(255,255,255,.08);
+  filter:brightness(1.16);
+  transform:translateY(-1px);
+ }
+}
+.tasklist .task:focus-visible{
+ background:linear-gradient(120deg,rgba(196,181,253,.19),rgba(139,92,246,.12));
+ border-color:rgba(196,181,253,.42);
+}
+
+
+/* Keep Work checklist rows compact and vertically centered like Prayer */
+@media (min-width:1001px) and (min-height:650px){
+ .work .tasklist{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:9px;
+ }
+ .work .tasklist .task{
+  flex:0 0 auto;
+  min-height:52px;
+  height:52px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+ }
+}
+@media (min-width:1001px) and (max-height:760px){
+ .work .tasklist .task{min-height:44px;height:44px;padding:8px 10px}
+}
+
+
+/* Glass-like translucent liquid fill, driven by the live daily score */
+.sidebar-note{
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ min-height:132px;
+ background:linear-gradient(155deg,rgba(255,255,255,.075),rgba(35,26,55,.48));
+ border:1px solid rgba(221,214,254,.22);
+ box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 8px 22px rgba(0,0,0,.16);
+ backdrop-filter:blur(16px);
+ -webkit-backdrop-filter:blur(16px);
+}
+.sidebar-note:not(.has-fill)::before,.sidebar-note:not(.has-fill)::after{display:none}
+.sidebar-note::before{
+ content:"";
+ position:absolute;
+ z-index:0;
+ left:0;
+ top:calc(100% - var(--fill,0%));
+ bottom:0;
+ width:100%;
+ height:auto;
+ border-radius:48% 52% 0 0 / 12% 15% 0 0;
+ background:linear-gradient(180deg,rgba(221,214,254,.22) 0%,rgba(167,139,250,.18) 40%,rgba(139,92,246,.26) 100%);
+ border-top:0;
+ box-shadow:0 -5px 22px rgba(167,139,250,.13),inset 0 8px 18px rgba(255,255,255,.07);
+ backdrop-filter:blur(10px);
+ -webkit-backdrop-filter:blur(10px);
+ transition:top 4.2s cubic-bezier(.16,1,.3,1);
+ animation:none;
+}
+.sidebar-note::after{
+ content:"";
+ position:absolute;
+ z-index:1;
+ left:0;
+ top:calc(100% - var(--fill,0%) - 8px);
+ width:100%;
+ height:17px;
+ border-radius:50%;
+ background:linear-gradient(90deg,rgba(221,214,254,.08),rgba(237,233,254,.42),rgba(196,181,253,.12));
+ filter:blur(5px);
+ transition:top 4.2s cubic-bezier(.16,1,.3,1);
+ animation:target-wave 7s ease-in-out infinite alternate-reverse;
+}
+.sidebar-note span,.sidebar-note strong,.sidebar-note small{position:relative;z-index:2;color:#FBF9FF}
+.sidebar-note span{color:#E8DEFF}
+.sidebar-note strong{text-shadow:0 2px 12px rgba(48,20,91,.3)}
+.sidebar-note small{color:rgba(250,247,255,.86)}
+@keyframes target-wave{
+ from{transform:translateY(0)}
+ to{transform:translateY(-1.5px)}
+}
+@media(prefers-reduced-motion:reduce){.sidebar-note::before,.sidebar-note::after{animation:none}}
+
+
+.score-party{
+ position:absolute;
+ z-index:3;
+ top:10px;
+ right:12px;
+ font-size:25px;
+ opacity:0;
+ transform:translateY(10px) scale(.55) rotate(-18deg);
+ pointer-events:none;
+}
+.sidebar-note.celebrate .score-party{animation:party-pop 10s cubic-bezier(.2,.8,.25,1) both}
+.sidebar-note.celebrate .score-party::before,
+.sidebar-note.celebrate .score-party::after{
+ content:"✦  ·  ✧";
+ position:absolute;
+ top:3px;
+ right:25px;
+ width:55px;
+ color:#E9D5FF;
+ font-size:12px;
+ letter-spacing:4px;
+ animation:confetti-burst 1.2s ease-out both;
+}
+.sidebar-note.celebrate .score-party::after{color:#C4B5FD;animation-delay:.08s;transform:rotate(35deg)}
+@keyframes party-pop{
+ 0%{opacity:0;transform:translateY(12px) scale(.4) rotate(-18deg)}
+ 18%{opacity:1;transform:translateY(-5px) scale(1.2) rotate(8deg)}
+ 38%{transform:translateY(0) scale(1) rotate(0)}
+ 82%{opacity:1}
+ 100%{opacity:0;transform:translateY(-8px) scale(.9)}
+}
+@keyframes confetti-burst{
+ 0%{opacity:0;transform:translate(0,8px) scale(.4)}
+ 25%{opacity:1}
+ 100%{opacity:0;transform:translate(22px,-24px) scale(1.25)}
+}
+
+
+/* Center the live score and keep the full-completion celebration visible for 10 seconds */
+.sidebar-note{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sidebar-note span,.sidebar-note strong,.sidebar-note small{width:100%;text-align:center}
+.sidebar-note strong{font-size:34px;margin:7px 0}
+.score-party{top:9px;right:10px}
+
+
+/* Full-width glass liquid and edge-to-edge completion state */
+.sidebar-note::before{
+ left:0;
+ width:100%;
+}
+.sidebar-note::after{
+ left:-5%;
+ width:110%;
+}
+.sidebar-note.is-full::before{
+ top:0;
+ height:100%;
+ left:0;
+ width:100%;
+ border-radius:0;
+ border-top:1px solid rgba(237,233,254,.5);
+}
+.sidebar-note.is-full::after{display:none}
+
+</style>
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+ <defs>
+  <linearGradient id="purpleGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6D28D9"/><stop offset="1" stop-color="#C4B5FD"/></linearGradient>
+  <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#16A34A"/><stop offset="1" stop-color="#4ADE80"/></linearGradient>
+  <linearGradient id="foodGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FB923C"/><stop offset="1" stop-color="#F472B6"/></linearGradient>
+  <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#60A5FA"/><stop offset="1" stop-color="#C4B5FD"/></linearGradient>
+ </defs>
+</svg>
+<div class="shell">
+ <div class="app-layout">
+  <aside class="sidebar">
+   <div class="side-brand">
+    <div class="brand-lockup">
+     <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40"><defs><linearGradient id="brandGlow" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E9D5FF"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient></defs><rect x="1" y="1" width="38" height="38" rx="12" fill="url(#brandGlow)" opacity=".18"/><path d="M10 23.5a10 10 0 0 1 20 0" fill="none" stroke="#DCCBFF" stroke-width="2.4" stroke-linecap="round"/><path d="m15.5 22 3.2 3.2 6.8-7" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 29h20" stroke="#A78BFA" stroke-width="2" stroke-linecap="round"/></svg></span>
+     <span class="brand-name">DAY<span>FLOW</span></span>
+    </div>
+    
+   </div>
+   <div class="side-label">WORKSPACE</div>
+   <nav class="side-nav" aria-label="Dashboard sections">
+    <a href="#daily" class="active">Overview</a>
+    <a href="#work">Work</a>
+    <a href="#prayer">Prayer</a>
+    <a href="#food">Nutrition</a>
+    <a href="#exercise">Exercise</a>
+    <a href="#weekly">Weekly progress</a>
+    <a href="#streak">Streak</a>
+   </nav>
+   <div class="sidebar-note" id="sidebarTarget"><span>DAILY SCORE</span><strong id="targetPercent">0%</strong><small id="targetCaption">Your progress today</small><div class="score-party" id="scoreParty" aria-hidden="true">🎉</div></div>
+  </aside>
+  <div class="workspace">
+   <header class="topline">
+    <div class="welcome"><div class="eyebrow">YOUR PERSONAL SPACE</div><h1>Welcome back, Abdullah Shahid</h1><p>Build consistency, one day at a time.</p></div>
+    <div class="date-tools"><span class="date" id="dateText"></span><button class="reset" id="reset">↻ New day</button></div>
+   </header>
+   <main class="grid">
+  <section class="card daily" id="daily">
+   <div class="card-head"><h2>DAILY SCORE</h2><span class="pill" id="doneCount">0 OF 14 DONE</span></div>
+   <div class="daily-chip" id="streakChip">✦ 0 day streak</div>
+   <div class="daily-main"><div><div class="daily-title"><span>Daily</span><br>Routine</div><div class="daily-score" id="score">0%<br><small>of today's tasks completed</small></div></div><div class="daily-ring"><svg viewBox="0 0 100 100"><circle class="rtrack" cx="50" cy="50" r="32"/><circle class="rvalue" id="dailyRing" cx="50" cy="50" r="32"/></svg><strong id="ringText">0%</strong></div></div>
+  </section>
+  <section class="card work" id="work">
+   <div class="card-head"><h2>WORK</h2><span class="pill" id="workCount">0 / 2</span></div>
+   <div class="tasklist">
+    <button class="task" data-task="office"><span class="check"></span><span class="name">Office Job</span><span class="smallcount">01</span></button>
+    <button class="task" data-task="learning"><span class="check"></span><span class="name">Learning</span><span class="smallcount">02</span></button>
+   </div><div class="barline"><span id="workBar"></span></div>
+  </section>
+  <section class="card food" id="food">
+   <div class="card-head"><h2>NUTRITION</h2><span class="pill" id="foodCount">0 / 3</span></div>
+   <div class="food-layout"><div class="donut"><svg viewBox="0 0 100 100"><circle class="dtrack" cx="50" cy="50" r="26"/><circle class="dvalue" id="foodRing" cx="50" cy="50" r="26"/></svg><strong id="foodNum">0/3</strong></div><div class="tasklist">
+    <button class="task" data-task="dates"><span class="check"></span><span class="name">2 Dates</span></button>
+    <button class="task" data-task="milk"><span class="check"></span><span class="name">1 Glass Milk</span></button>
+    <button class="task" data-task="eggs"><span class="check"></span><span class="name">3 Eggs</span></button>
+   </div></div><div class="muted" style="margin-top:8px">Daily nutrition goals</div>
+  </section>
+  <section class="card prayer" id="prayer">
+   <div class="card-head"><h2>PRAYER</h2><span class="pill" id="prayerCount">0 / 6</span></div>
+   <div class="tasklist prayer-list">
+    <button class="task" data-task="fajr" aria-label="Mark Fajr complete"><span class="check"></span><span class="name">Fajr</span></button>
+    <button class="task" data-task="dhuhr" aria-label="Mark Dhuhr complete"><span class="check"></span><span class="name">Dhuhr</span></button>
+    <button class="task" data-task="asr" aria-label="Mark Asr complete"><span class="check"></span><span class="name">Asr</span></button>
+    <button class="task" data-task="maghrib" aria-label="Mark Maghrib complete"><span class="check"></span><span class="name">Maghrib</span></button>
+    <button class="task" data-task="isha" aria-label="Mark Isha complete"><span class="check"></span><span class="name">Isha</span></button>
+    <button class="task" data-task="tahajjud" aria-label="Mark Tahajjud complete"><span class="check"></span><span class="name">Tahajjud</span></button>
+   </div>
+  </section>
+  <section class="card exercise" id="exercise">
+   <div class="card-head"><h2>EXERCISE</h2><span class="pill" id="exerciseCount">0 / 3</span></div>
+   <div class="tasklist">
+    <div class="task" data-exercise="sitstand"><span class="check"></span><span class="name">Sit-Stand</span><input class="taskinput" type="number" min="0" max="9999" placeholder="0" data-rep="sitstand" aria-label="Sit-Stand reps"><span class="reptext">REPS</span></div>
+    <div class="task" data-exercise="pullups"><span class="check"></span><span class="name">Pull-Ups</span><input class="taskinput" type="number" min="0" max="9999" placeholder="0" data-rep="pullups" aria-label="Pull-Up reps"><span class="reptext">REPS</span></div>
+    <div class="task" data-exercise="pushups"><span class="check"></span><span class="name">Push-Ups</span><input class="taskinput" type="number" min="0" max="9999" placeholder="0" data-rep="pushups" aria-label="Push-Up reps"><span class="reptext">REPS</span></div>
+   </div>
+   <div class="exercise-foot" id="totalReps">Total reps today: 0</div>
+  </section>
+  <section class="card weekly" id="weekly">
+   <div class="card-head"><h2>WEEKLY PROGRESS</h2><span class="pill">LAST 7 DAYS</span></div><div class="chart" id="weeklyChart"></div>
+  </section>
+  <section class="card streak" id="streak">
+   <div class="card-head"><h2>STREAK</h2><span class="glass-icon fire-icon" aria-label="Streak flame">🔥</span><span class="pill">80% GOAL</span></div>
+   <div class="streak-body"><div class="streak-ring"><svg viewBox="0 0 100 100"><circle class="sttrack" cx="50" cy="50" r="32"/><circle class="stvalue" id="streakRing" cx="50" cy="50" r="32"/></svg><strong id="streakNumber">0</strong></div><div class="streak-copy"><strong id="streakDays">0 Days</strong><p>in a row at 80% or more</p></div></div>
+  </section>
+ </main>
+  </div>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{
+ const KEY="dailyRoutine.referenceStyle.v1";
+ const groups={work:["office","learning"],prayer:["fajr","dhuhr","asr","maghrib","isha","tahajjud"],food:["dates","milk","eggs"],exercise:["sitstand","pullups","pushups"]};
+ const all=Object.values(groups).flat(),total=14;
+ const $=id=>document.getElementById(id);
+ const keyFor=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+ const today=()=>keyFor(new Date());
+ const blank=()=>({date:today(),checks:{},reps:{sitstand:0,pullups:0,pushups:0},history:{}});
+ const scoreOf=checks=>Math.round(all.filter(k=>checks&&checks[k]).length/total*100);
+ function load(){try{let s=JSON.parse(localStorage.getItem(KEY));if(!s)return blank();s={...blank(),...s};s.history=s.history||{};s.checks=s.checks||{};s.reps={...blank().reps,...(s.reps||{})};if(s.date!==today()){if(s.date)s.history[s.date]=scoreOf(s.checks);s.date=today();s.checks={};s.reps=blank().reps;}return s}catch(e){return blank()}}
+ let state=load();
+ let lastRenderedScore=scoreOf(state.checks);
+ function save(){try{state.date=today();localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast("Could not save data in this browser.")}}
+ function count(g){return groups[g].filter(k=>state.checks[k]).length}
+ function score(){return scoreOf(state.checks)}
+ function streak(){let d=new Date(),n=0;if(score()<80)d.setDate(d.getDate()-1);for(let i=0;i<365;i++){let k=keyFor(d),v=k===today()?score():Number(state.history[k]||0);if(v<80)break;n++;d.setDate(d.getDate()-1)}return n}
+ function dates(){let a=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);a.push(d)}return a}
+ function render(){
+  document.querySelectorAll("[data-task]").forEach(el=>{let yes=!!state.checks[el.dataset.task];el.classList.toggle("done",yes);el.querySelector(".check").textContent=yes?"✓":"";el.setAttribute("aria-pressed",String(yes))});
+  document.querySelectorAll("[data-exercise]").forEach(el=>{let yes=!!state.checks[el.dataset.exercise];el.classList.toggle("done",yes);el.querySelector(".check").textContent=yes?"✓":"";el.setAttribute("aria-pressed",String(yes))});
+  document.querySelectorAll("[data-rep]").forEach(el=>{if(document.activeElement!==el)el.value=state.reps[el.dataset.rep]||""});
+  const s=score(),done=all.filter(k=>state.checks[k]).length,st=streak();
+  $("targetPercent").textContent=s+"%";
+  $("sidebarTarget").style.setProperty("--fill",s+"%");
+  $("sidebarTarget").classList.toggle("has-fill",s>0);
+  $("sidebarTarget").classList.toggle("is-full",s===100);
+  if(s===100 && lastRenderedScore<100){
+   const party=$("sidebarTarget");
+   party.classList.remove("celebrate");
+   void party.offsetWidth;
+   party.classList.add("celebrate");
+   clearTimeout(party.partyTimer);
+   party.partyTimer=setTimeout(()=>party.classList.remove("celebrate"),10000);
+  }
+  lastRenderedScore=s;
+  $("score").innerHTML=`${s}%<br><small>of today's tasks completed</small>`;$("ringText").textContent=s+"%";$("dailyRing").style.strokeDashoffset=201*(1-s/100);
+  $("doneCount").textContent=`${done} OF 14 DONE`;$("streakChip").textContent=`✦ ${st} day streak`;
+  ["work","prayer","food","exercise"].forEach(g=>{$(g+"Count").textContent=`${count(g)} / ${groups[g].length}`});
+  $("workBar").style.width=count("work")/2*100+"%";
+  $("foodNum").textContent=count("food")+"/3";$("foodRing").style.strokeDashoffset=163*(1-count("food")/3);
+  const reps=Object.values(state.reps).reduce((a,b)=>a+(Number(b)||0),0);$("totalReps").textContent="Total reps today: "+reps;
+  if($("exerciseBar"))$("exerciseBar").style.width=count("exercise")/3*100+"%";
+  $("streakNumber").textContent=st;$("streakDays").textContent=st+" Days";$("streakRing").style.strokeDashoffset=201*(1-Math.min(7,st)/7);
+  const ds=dates(),vals=ds.map(d=>keyFor(d)===today()?s:Number(state.history[keyFor(d)]||0));
+  $("weeklyChart").innerHTML=vals.map((v,i)=>`<div class="chart-col ${i===6?"today":""}"><span class="chart-pct">${v}%</span><div class="chart-barwrap"><div class="chart-bar" style="height:${Math.max(2,v)}%"></div></div><small>${ds[i].toLocaleDateString(undefined,{weekday:"short"})}</small></div>`).join("");
+  save();
+ }
+ function toast(msg){let el=$("toast");el.textContent=msg;el.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove("show"),2200)}
+ document.querySelectorAll("[data-task],[data-exercise]").forEach(el=>{
+  el.addEventListener("click",e=>{if(e.target.closest("[data-rep]"))return;let id=el.dataset.task||el.dataset.exercise;state.checks[id]=!state.checks[id];render()});
+ });
+ document.querySelectorAll("[data-rep]").forEach(el=>el.addEventListener("input",()=>{state.reps[el.dataset.rep]=Math.max(0,Math.min(9999,Number(el.value)||0));save();$("totalReps").textContent="Total reps today: "+Object.values(state.reps).reduce((a,b)=>a+(Number(b)||0),0)}));
+ $("reset").addEventListener("click",()=>{if(!confirm("Save today's score and start a fresh day?"))return;state.history[today()]=score();state.checks={};state.reps=blank().reps;render();toast("Today's score saved.")});
+ const dashboardGrid=document.querySelector(".grid");
+ const sectionLinks=[...document.querySelectorAll(".side-nav a")];
+ function focusSection(link){
+  sectionLinks.forEach(item=>item.classList.toggle("active",item===link));
+  const target=document.querySelector(link.getAttribute("href"));
+  if(link.getAttribute("href")==="#daily"){
+   dashboardGrid.classList.remove("is-focused");
+   dashboardGrid.querySelectorAll(".card").forEach(card=>card.classList.remove("is-selected"));
+  }else if(target){
+   dashboardGrid.classList.add("is-focused");
+   dashboardGrid.querySelectorAll(".card").forEach(card=>card.classList.toggle("is-selected",card===target));
+  }
+ }
+ sectionLinks.forEach(link=>link.addEventListener("click",event=>{
+  event.preventDefault();
+  focusSection(link);
+ }));
+ dashboardGrid.querySelectorAll(".card").forEach(card=>card.addEventListener("click",event=>{
+  if(event.target.closest("button,input,a"))return;
+  const matching=sectionLinks.find(link=>link.getAttribute("href")==="#"+card.id);
+  if(matching)focusSection(matching);
+ }));
+ const now=new Date();$("dateText").textContent=now.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"});
+ render();
+})();
+</script>
+</body>
+</html>

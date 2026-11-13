@@ -1,18 +1,5 @@
-FROM node:22-alpine
+FROM nginx:alpine
 
-WORKDIR /app
+COPY dayflow/ /usr/share/nginx/html/
 
-COPY package*.json ./
-
-RUN npm ci --omit=dev
-
-COPY app.js ./
-COPY views ./views
-
-ENV PORT=8000
-
-EXPOSE 8000
-
-USER node
-
-CMD ["node", "app.js"]
+EXPOSE 80

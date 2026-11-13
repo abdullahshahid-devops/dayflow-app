@@ -1,4 +1,22 @@
+# Operating system
+.DS_Store
+Thumbs.db
 
-node_modules/
-deb
-echo
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.bak
+
+# Archives and backups
+*.tar.gz
+archive/

@@ -1,7 +1,8 @@
-version: '3.9'
-
 services:
-  web:
-    image: "trainwithshubham/node-app:latest"
+  dayflow:
+    build: .
+    image: dayflow:latest
+    container_name: dayflow
     ports:
-      - "8000:8000"
+      - "8080:80"
+    restart: unless-stopped
