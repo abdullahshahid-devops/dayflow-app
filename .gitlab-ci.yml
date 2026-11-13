@@ -1,6 +1,7 @@
 stages:
   - validate
   - build
+  - security_scan
   - publish
 
 variables:
@@ -22,6 +23,13 @@ build_image:
     - dayflow-shell
   script:
     - docker build -t "$IMAGE_TAG" .
+
+security_scan:
+  stage: security_scan
+  tags:
+    - dayflow-shell
+  script:
+    - trivy image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed --scanners vuln "$IMAGE_TAG"
 
 publish_image:
   stage: publish
