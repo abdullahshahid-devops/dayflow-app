@@ -33,8 +33,8 @@ No Node.js or npm required.
 
 ### 1. Clone the repository
 
-    git clone https://github.com/abdullahshahid-devops/node-todo-gitlab-cicd-aws.git
-    cd node-todo-gitlab-cicd-aws
+    git clone https://github.com/abdullahshahid-devops/dayflow-app.git
+    cd dayflow-app
 
 ### 2. Build and start DAYFLOW
 
