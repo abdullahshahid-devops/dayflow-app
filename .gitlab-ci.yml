@@ -77,7 +77,6 @@ deploy_dayflow:
   environment:
     name: production
   resource_group: dayflow-production
-  when: manual
   script:
     - |
       set -eu
